@@ -25,6 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
 <style>
+/* 盤のマスは --paper（空き）と --ink（生きている）で塗る。暗いテーマでは両方が入れかわるので差が残る（life-mikata #1 の CodeRabbit） */
 /* 調べものの机：生成りの紙に紺の字。正しい答えには「正解」の判 */
 :root{
   --bg:#f3efe4; --paper:#fffdf7; --ink:#1d2a3f; --ink2:#4c5568; --line:#1d2a3f26;
@@ -63,11 +64,11 @@ button.sub:disabled,button.main:disabled{opacity:.45;cursor:default}
 .sky{display:block;width:100%;height:auto;border-bottom:2px solid var(--ink)}
 .sky svg{display:block;width:100%;height:auto}
 .sky svg.lgrid{max-width:360px;margin:8px auto}
-.lgrid .lc{fill:#fff;stroke:#1d2a3f40;stroke-width:1}
+.lgrid .lc{fill:var(--paper);stroke:var(--line);stroke-width:1}
 .lgrid .lc.on{fill:var(--ink);stroke:var(--ink)}
 .lgrid .lmk{fill:none;stroke:var(--shu);stroke-width:3.5}
 .lgrid .lst{font-size:17px;font-weight:900;fill:var(--shu2)}
-.lgrid .lst.on{fill:#fff}
+.lgrid .lst.on{fill:var(--paper)}
 .ad{position:relative;background:var(--paper);border:2px solid var(--ink);border-radius:6px;box-shadow:0 8px 18px #1d2a3f22;overflow:hidden}
 .ad .bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:.35rem .8rem;background:var(--ink);color:#fff;font-size:.78rem;font-weight:700}
 .ad .bar span:last-child{opacity:.9}

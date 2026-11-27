@@ -228,7 +228,9 @@
     for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) r.push(`<rect x="${P + x * S}" y="${P + y * S}" width="${S}" height="${S}" class="${on.some(([a, c]) => a === x && c === y) ? "lc on" : "lc"}"/>`);
     if (m) { const alive = b.cells.some(([a, c]) => a === m[0] && c === m[1]); r.push(`<rect x="${P + m[0] * S + 1.5}" y="${P + m[1] * S + 1.5}" width="${S - 3}" height="${S - 3}" class="lmk"/><text x="${P + m[0] * S + S / 2}" y="${P + m[1] * S + S / 2 + 6}" text-anchor="middle" class="${alive ? "lst on" : "lst"}">★</text>`); }
     const n = on.filter(([x, y]) => x >= 0 && y >= 0 && x < W && y < W).length;
-    const al = label || `${W}×${W}の盤。生きたマスは${n}個${m ? `。★は左から${m[0] + 1}列め、上から${m[1] + 1}行めの${b.cells.some(([a, c]) => a === m[0] && c === m[1]) ? "生きた" : "空の"}マス` : ""}`;
+    // 読み上げでも盤を読めるように、生きたマスの場所（左から何列め-上から何行め）を全部書く（life-mikata #1 の CodeRabbit）
+    const where = on.filter(([x, y]) => x >= 0 && y >= 0 && x < W && y < W).map(([x, y]) => `${x + 1}-${y + 1}`).join("、");
+    const al = label || `${W}×${W}の盤。生きたマスは${n}個${n ? `（左から何列め-上から何行め：${where}）` : ""}${m ? `。★は${m[0] + 1}-${m[1] + 1}の${b.cells.some(([a, c]) => a === m[0] && c === m[1]) ? "生きた" : "空の"}マス` : ""}`;
     return `<svg viewBox="0 0 ${Z} ${Z}" role="img" aria-label="${al}" class="lgrid">${r.join("")}</svg>`;
   }
   const keyOf = (P) => `${P.kind}:${P.v}`;

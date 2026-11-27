@@ -51,6 +51,7 @@ const OKSRC = /^https:\/\/(conwaylife\.com\/wiki\/Conway%27s_Game_of_Life|dl\.tu
           if (c1[0] !== c0[0] || P.ans !== `${DIRW(c1[1] - c0[1], c1[2] - c0[2])}へ${Math.abs(c1[1] - c0[1])}マス` || Math.abs(c1[1] - c0[1]) !== Math.abs(c1[2] - c0[2]) || w0.g !== "susumu") why.push("グライダーの動きがきまりとちがう"); }
         if (where(cells).g !== P.grp) why.push("2段目（このまま進むとどうなる）がきまりとちがう");
         if (!P.svg || !/^<svg [^>]*role="img" aria-label="[^"]+"/.test(P.svg) || (P.svg.match(/class="lc on"/g) || []).length !== cells.length) why.push("盤の絵がちがう");
+        { const al = (P.svg.match(/aria-label="([^"]+)"/) || [])[1] || ""; if (cells.some(([x, y]) => !al.includes(`${x + 1}-${y + 1}`))) why.push("読み上げで生きたマスの場所が分からない"); }
         ansSeen.add(P.ans);
       } else {
         if (FACT[k.id] === undefined) why.push("表に無い種類");
@@ -101,6 +102,7 @@ const OKSRC = /^https:\/\/(conwaylife\.com\/wiki\/Conway%27s_Game_of_Life|dl\.tu
 const html = readFileSync(path.join(root, "index.html"), "utf8"), gen = readFileSync(path.join(root, "data.js"), "utf8"), readme = readFileSync(path.join(root, "README.md"), "utf8");
 const ext = [...html.matchAll(/(?:src|href)="(https?:[^"]+)"/g)].map((m) => m[1]).filter((u) => !/^https:\/\/fonts\.googleapis\.com(\/|$)|^https:\/\/ko-fi\.com\/satouaaaaa$/.test(u));
 check("外から読むのは文字（Google Fonts）だけ。スクリプト・広告・解析を入れない（出典のリンクは押したときに開くだけ）", ext.length === 0 && ![...html.matchAll(/<script[^>]+src="([^"]+)"/g)].some((m) => /^https?:/.test(m[1])), ext.join(","));
+check("盤のマスはテーマの色（--paper と --ink）で塗る（白のままだと、暗いテーマで生きたマスとの差が無くなる。life-mikata #1 の CodeRabbit）", /\.lgrid \.lc\{fill:var\(--paper\)/.test(html) && /\.lgrid \.lc\.on\{fill:var\(--ink\)/.test(html) && !/\.lgrid[^{]*\{[^}]*fill:#fff/.test(html));
 check("CSP で通信先を自分だけにしている", /connect-src 'self'/.test(html) && !/connect-src[^;"]*https/.test(html));
 check("Math.random は練習・とことんの種だけ（今日の5問・上級は日付の乱数。data.js には無い）", (html.match(/Math\.random/g) || []).length === 2 && !/Math\.random/.test(gen));
 check("乱数は sort の比較の中で引かない（ブラウザで引く回数が変わる）", !/\.sort\(\s*\([^)]*\)\s*=>[^\n;]*\b(R|rng|rand|Math\.random)\s*\(/.test(html + gen));
