@@ -64,6 +64,12 @@ const OKSRC = /^https:\/\/(conwaylife\.com\/wiki\/Conway%27s_Game_of_Life|dl\.tu
       if (why.length && !bad[k.id]) bad[k.id] = why.join("・") + "：" + P.q + " " + P.opts.join(" / ");
     }
   }
+  // 形の向き8通りすべてで、2段目（このまま進むとどうなる）が同じになるか（置き場所は平面の上では結果を変えない）
+  for (const k of G.KINDS.filter((x) => x.pat)) for (let o = 0; o < 8; o++) for (let j = 0; j < 3; j++) {
+    const base = G.PAT[k.pat] ? G.PAT[k.pat] : null; if (!base && j > 0 && k.pat === "glider") continue;
+    const c = G.orient(base || G.make(`${k.id}|or${o}.${j}`).board.cells, o);
+    if (where(c).g !== k.grp && !bad[k.id]) bad[k.id] = `向き${o}で2段目がちがう`;
+  }
   check(`問題：${G.KINDS.length}種類×${N}問で、選び肢（やさしい3・ほか4）・答えは1つ・答えと2段目が、別に書いたきまりで世代を進めた結果どおり・出典がある`, Object.keys(bad).length === 0, JSON.stringify(bad));
   const total = Object.values(seen).reduce((a, s) => a + s.size, 0), few = G.KINDS.filter((k) => seen[k.id].size < 12).map((k) => `${k.id}:${seen[k.id].size}`);
   check("問題の数：全部で300通り以上・どの種類も12通り以上（好きなだけ遊んでも同じ問題が続かない。game-dev.md F6）", total >= 300 && few.length === 0, `${total}通り ${few.join(",")}`);
@@ -324,7 +330,7 @@ try {
     check("ホームの「続けて」は、きのうを休んだら — （休んだ日を責めない）", (await q.textContent(".stats")).includes("—"));
     await q.click("#go-cal");
     const lateList = await q.evaluate(() => __nm.lateDays(__nm.load()));
-    const exp = [1, 4, 5, 6, 7].map(dayBefore).filter((d) => d >= "2026-11-07");
+    const exp = [1, 4, 5, 6, 7].map(dayBefore).filter((d) => d >= "2026-11-27"); // ゲームの初日 EPOCH より前は数えない
     check("カレンダー：取りこぼした過去7日（第1回より後）を押せる", JSON.stringify(lateList) === JSON.stringify(exp), lateList.join(","));
     check("カレンダー：遊んだ日は★の数の文字も付く", (await q.locator(".cal .c.p3").count()) + (await q.locator(".cal .c.p2").count()) + (await q.locator(".cal .c.p1").count()) >= (dayBefore(3).slice(0, 7) === TODAY.slice(0, 7) ? 2 : 0));
     if (lateList.length) {
